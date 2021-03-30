@@ -44,13 +44,27 @@ class AntrianPanggilan extends CI_Controller {
 	public function antrian_selanjutnya(){
 		$tanggal = date('Ymd');
 		$abjad = $_GET['abjad'];
-		$where = array('(SUBSTRING(NoAntri, 1, 1) => "'.$abjad.'")', 'DATE(Tanggal)' => $tanggal, 'Panggil' => 0, 'Selesai' => 0);
-		//(SUBSTRING(id_sample, 1, 4) = '$id')
+		$where = array('SUBSTRING(NoAntri, 1, 1)=' => $abjad, 'DATE(Tanggal)' => $tanggal, 'Panggil' => 0, 'Selesai' => 0);
 		$query = $this->M_crud->get_antrian_selanjutnya('NoAntri', 'tbnoantri', $where)->row();
 
-		echo json_encode($query->NoAntri);
+		//echo json_encode($query->NoAntri);
+		//$this->update_antrian(); 
+		
+		$query2 = $this->db->query("SELECT NoAntri from tbnoantri WHERE Panggil = 1 AND Selesai = 0  ORDER BY NoAntri DESC ")->row();
+		
+		$a = isset($query->NoAntri) ? TRUE : FALSE;
+		$b = isset($query2->NoAntri) ? TRUE : FALSE;
+		$c = $query->NoAntri;
 
-		$this->update_antrian(); 
+		$hasil = array('aktif' => $a, 'before' => $b, 'hasil' => $c);
+		if($a == TRUE && $b == FALSE){
+			
+			$this->update_antrian(); 
+			echo json_encode($hasil);
+		}else echo false;
+
+
+		
 
 		//$loket = $_GET['loket'];
 		//$query = $this->db->query('SELECT MIN(NoAntri) as NoAntri FROM tbnoantri WHERE SUBSTRING(NoAntri, 1, 1) = "'.$abjad.'" AND DATE(Tanggal) = "'.$tanggal.'" AND Panggil = 0 AND Selesai = 0 ')->row();
@@ -75,10 +89,26 @@ class AntrianPanggilan extends CI_Controller {
 		$this->db->update('tbnoantri', $data);
 	}
 
+	public function update_selesai(){
+		$tanggal = date('Ymd');
+		$antrian = $_POST['antrian'];
+
+		$data = array(
+		'Selesai' => '1'
+		//'Loket' => $loket
+		// 'Selesai' => '1',
+		//'date' => $date
+		);
+
+		$where = array('NoAntri' => $antrian, 'DATE(Tanggal)' => $tanggal);
+		$this->db->where($where);
+		$this->db->update('tbnoantri', $data);
+	}
+
 	public function get_sisa_antrian(){
 		$tanggal = date('Ymd');
 		$abjad = $_GET['abjad'];
-		$where = array('(SUBSTRING(NoAntri, 1, 1) => "'.$abjad.'")', 'DATE(Tanggal)' => $tanggal, 'Panggil' => 0, 'Selesai' => 0);
+		$where = array('SUBSTRING(NoAntri, 1, 1)=' => $abjad, 'DATE(Tanggal)' => $tanggal, 'Panggil' => 0, 'Selesai' => 0);
 		$query = $this->M_crud->get_sisa_antrian('NoAntri', 'tbnoantri', $where)->num_rows();
 		echo json_encode($query);
 

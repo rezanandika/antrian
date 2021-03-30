@@ -20,8 +20,6 @@
 <script type="text/javascript">
 		function panggil(){
 
-			var isPaused = false;
-
 			var kode = $('#pilihabjad').val();
 			var urutanloket = $('#urutanloket').val();
 			var loket = $('#pilihloket').val();
@@ -34,12 +32,13 @@
 				// $("#nomorantrian").val(data);
             });
 
-			if (isPaused == false){
+	
 				// isPaused = true;
 				mainkan();
-			}else{
-
-			}
+				setTimeout(() => {
+					updateselesai();
+			}, 13000);
+				
 			// setTimeout(() => {
 			// 	// alert();
 			// }, 13000);
@@ -527,6 +526,18 @@
 							document.getElementById('urutanloketxx').play();
 						}, totalwaktu);	
 			}
+		}
+
+		function updateselesai(){
+			$.ajax({
+			type:"POST",
+			dataType: 'json',
+			url: "<?php echo site_url('AntrianPanggilan/update_selesai/'); ?>",
+			data: "antrian="+urutanloket,
+			success:function(data){ 
+
+				}
+			})
 		}
 			
 	

@@ -179,26 +179,32 @@ $('#toggle').click(function() {
 		    var loket = $('#pilihloket').val();
 		    var abjadx = $('#pilihabjad').val();
 			
-		    $.get(
+		    $.getJSON(
               "<?php echo base_url().'AntrianPanggilan/antrian_selanjutnya/'; ?>",
               {abjad: abjadx, loket: loket},function(data){
+				  console.log(data.hasil);
 				//console.log(JSON.parse(data));
-                $("#a").html(JSON.parse(data));
-                $("#urutanloket").val(JSON.parse(data));
-				$("#nomorantrian").val(JSON.parse(data));
+                $("#a").html(data.hasil);
+                $("#urutanloket").val(data.hasil);
+				$("#nomorantrian").val(data.hasil);
+
+				if(data.hasil != null && data.before == false){
+					setTimeout(() => {
+						panggil();
+					}, 600);
+				}
             });
-			$.get(
+			$.getJSON(
               "<?php echo base_url().'AntrianPanggilan/get_sisa_antrian/'; ?>",
               {abjad: abjadx, loket: loket},function(data){
 
 				setTimeout(() => {
-                $("#sisaantrian").html(JSON.parse(data));
+                $("#sisaantrian").html(data);
 				}, 200);
             });
-			setTimeout(() => {
-				panggil();
-				// doSomethingElse();
-			}, 500);
+			// setTimeout(() => {
+			// 	panggil();
+			// }, 500);
 			// panggil.callback();
 		});
 </script>
